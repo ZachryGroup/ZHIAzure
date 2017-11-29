@@ -86,19 +86,15 @@
     "labVirtualNetworkName": "ZHI-PreProduction-8_32",
 	"existingLabName":"DXLab",
 	"domainToJoin":"ZHI.com",
-	"ouPath":"OU=DX,OU=Servers,OU=Enterprise,DC=ZHI,DC=com"
+	"ouPath":"OU=DX,OU=Servers,OU=Enterprise,DC=ZHI,DC=com",
+	"resourceName": "[concat(parameters('existingLabName'), '/', variables('vmName'))]",
   },
   "resources": [
     {
       "apiVersion": "2017-03-30",
       "type": "Microsoft.DevTestLab/labs/virtualMachines",
-      "name": "[variables('vmName')]",
+      "name": "[variables('resourceName')]",
       "location": "[resourceGroup().location]",
-	  "tags":{
-	      "BillingGroup":"[parameters('tagBillingGroup')]",
-		  "Creator":"[parameters('tagResourceCreator')]",
-		  "CreationDate":"[parameters('tagCreationDate')]"
-	  },
       "properties": {
 	    "licenseType":"Windows_Server",
         "size": "[parameters('virtmachsize')]",
