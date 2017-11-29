@@ -1,0 +1,152 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "VirtualMachineName": {
+      "type": "string",
+      "metadata": {
+        "description": "Unique Name for the Virtual Machine."
+      }
+    },
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Username for the Virtual Machine."
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the Virtual Machine."
+      }
+    },
+    "windowsOSVersion": {
+      "type": "string",
+      "defaultValue": "2016-Datacenter",
+      "allowedValues": [
+        "2008-R2-SP1",
+        "2012-Datacenter",
+        "2012-R2-Datacenter",
+        "2016-Nano-Server",
+        "2016-Datacenter-with-Containers",
+        "2016-Datacenter"
+      ],
+      "metadata": {
+        "description": "The Windows version for the VM. This will pick a fully patched image of this given Windows version."
+      }
+	  },
+      "disktype":{
+          "type": "string",
+          "defaultValue": "Standard",
+          "allowedValues": [
+            "Standard",
+            "Premium"
+          ],
+          "metadata":{"description":"Choose the type of disk, Standard for HDD, Premium for SSD"}
+      },
+	  
+	  "tagBillingGroup": { 
+	     "type": "string"
+		 },
+ 	  "tagResourceCreator": { 
+	     "type": "string"
+		 },
+ 	  "tagCreationDate": { 
+	     "type": "string"
+		 },
+             "domainUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Username of the account on the domain"
+      }
+    },
+    "domainPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password of the account on the domain"
+      }
+},
+       "virtmachSize":{
+	 "type":"string",
+	 "defaultValue":"Standard_DS2_V2",
+	 "allowedValues":[
+		"Standard_DS11_V2",
+		"Standard_DS12_V2",
+        "Standard_DS2_V2",
+        "Standard_DS3_V2",
+        "Standard_DS4_V2"
+	 ]
+	 }
+   
+  },
+  "variables": {
+    "vmName": "[parameters('VirtualMachineName')]",
+    "labSubnetName": "ZHI-PreProduction-Subnet-32",
+    "labVirtualNetworkId": "[resourceId('Microsoft.DevTestLab/labs/virtualnetworks', variables('existinglabName'), variables('labVirtualNetworkName'))]",
+    "labVirtualNetworkName": "ZHI-PreProduction-8_32",
+	"existingLabName":"DXLab",
+	"domainToJoin":"ZHI.com",
+	"ouPath":"OU=DX,OU=Servers,OU=Enterprise,DC=ZHI,DC=com"
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-03-30",
+      "type": "Microsoft.DevTestLab/labs/virtualMachines",
+      "name": "[variables('vmName')]",
+      "location": "[resourceGroup().location]",
+	  "tags":{
+	      "BillingGroup":"[parameters('tagBillingGroup')]",
+		  "Creator":"[parameters('tagResourceCreator')]",
+		  "CreationDate":"[parameters('tagCreationDate')]"
+	  },
+      "properties": {
+	    "licenseType":"Windows_Server",
+        "size": "[parameters('virtmachsize')]",
+        "userName": "[parameters('adminUsername')]",
+        "password": "[parameters('adminPassword')]",
+		"labVirtualNetworkId": "[variables('labVirtualNetworkId')]",
+		"labSubnetName": "[variables('labSubnetName')]",
+		"galleryImageReference": {
+		    "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "[parameters('windowsOSVersion')]",
+            "version": "latest",
+            "OsType": "Windows"
+		},  
+		"disallowPublicIpAddress": true,
+        "storageType": "[parameters('disktype')]",
+        "allowClaim": false,
+		"artifacts": [
+          {
+            "artifactId": "[resourceId('Microsoft.DevTestLab/labs/artifactSources/artifacts', parameters('labName'), 'public repo', 'windows-domain-join-new')]",
+            "parameters": [
+              {
+                "name": "domainAdminUsername",
+                "value": "[parameters('domainUsername')]"
+              },
+              {
+                "name": "domainAdminPassword",
+                "value": "[parameters('domainPassword')]"
+              },
+              {
+                "name": "domainToJoin",
+                "value": "[variables('domainToJoin')]"
+              },
+              {
+                "name": "ouPath",
+                "value": "[variables('ouPath')]"
+              }
+            ]
+          }
+        ],
+      }
+    },
+    		
+  ],
+  "outputs": {
+    "vmId": {
+      "type": "string",
+      "value": "[resourceId(variables('resourceType'),variables('existingLabName'), parameters('vmName'))]"
+}
+  }
+}
