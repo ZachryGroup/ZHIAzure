@@ -112,6 +112,7 @@
             "offer": "WindowsServer",
             "sku": "[parameters('windowsOSVersion')]",
             "version": "latest",
+			"licenseType":"Windows_Server",
             "OsType": "Windows"
 		},  
 		"disallowPublicIpAddress": true,
