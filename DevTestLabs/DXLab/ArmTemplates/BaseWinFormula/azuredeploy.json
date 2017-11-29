@@ -87,7 +87,7 @@
 	"existingLabName":"DXLab",
 	"domainToJoin":"ZHI.com",
 	"ouPath":"OU=DX,OU=Servers,OU=Enterprise,DC=ZHI,DC=com",
-	"resourceName": "[concat(parameters('existingLabName'), '/', variables('vmName'))]",
+	"resourceName": "[concat(variables('existingLabName'), '/', variables('vmName'))]",
   },
   "resources": [
     {
