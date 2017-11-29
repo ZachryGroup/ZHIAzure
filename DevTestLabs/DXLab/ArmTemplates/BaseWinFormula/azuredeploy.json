@@ -119,7 +119,7 @@
         "allowClaim": false,
 		"artifacts": [
           {
-            "artifactId": "[resourceId('Microsoft.DevTestLab/labs/artifactSources/artifacts', parameters('labName'), 'public repo', 'windows-domain-join-new')]",
+            "artifactId": "[resourceId('Microsoft.DevTestLab/labs/artifactSources/artifacts', variables('existinglabName'), 'public repo', 'windows-domain-join-new')]",
             "parameters": [
               {
                 "name": "domainAdminUsername",
