@@ -91,10 +91,15 @@
   },
   "resources": [
     {
-      "apiVersion": "2017-03-30",
+      "apiVersion": "2016-05-15",
       "type": "Microsoft.DevTestLab/labs/virtualMachines",
       "name": "[variables('resourceName')]",
       "location": "[resourceGroup().location]",
+	  "tags":{
+	      "BillingGroup":"[parameters('tagBillingGroup')]",
+		  "Creator":"[parameters('tagResourceCreator')]",
+		  "CreationDate":"[parameters('tagCreationDate')]"
+	  },
       "properties": {
 	    "licenseType":"Windows_Server",
         "size": "[parameters('virtmachsize')]",
